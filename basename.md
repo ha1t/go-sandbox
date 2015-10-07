@@ -7,7 +7,7 @@ echo basename("hoge/huga/moge.php") . "\n";
 
 
 
-```golang
+```go
 package main
 
 import (
