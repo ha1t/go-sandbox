@@ -80,29 +80,30 @@ func convertWebP(dir string) {
 		fmt.Println("<Source File Name:", file, ">")
 
 		// cwebp
-		cwebpCmd := exec.Command("cwebp", "-q", "75", "-metadata", "icc", "-sharp_yuv", "-o", generateFileName, "-progress", "-short", file)
+		cwebpCmd := exec.Command("cwebp", "-q", "75", "-metadata", "all", "-sharp_yuv", "-o", generateFileName, "-progress", "-short", file)
 		cwebpErr := cwebpCmd.Run()
 		if cwebpErr != nil {
 			fmt.Println("cwebpの実行に失敗しました:", cwebpErr)
 			continue
 		}
 
-		/*
-		   // exiftool
-		   exiftoolCmd := exec.Command("exiftool", "-overwrite_original", "-TagsFromFile", file, generateFileName)
-		   exiftoolErr := exiftoolCmd.Run()
-		   if exiftoolErr != nil {
-		           fmt.Println("exiftoolの実行に失敗しました:", exiftoolErr)
-		           continue
-		   }
+		// cwebp -metadata で exif を拾いきれないのでexiftoolを使い、magickでautorotateする
+		// https://stackoverflow.com/questions/76681968/cwebp-metadata-all-does-not-keep-metadata
 
-		   // magick
-		   magickCmd := exec.Command("magick", generateFileName, "-auto-orient", generateFileName)
-		   magickErr := magickCmd.Run()
-		   if magickErr != nil {
-		           fmt.Println("magickの実行に失敗しました:", magickErr)
-		           continue
-		   }
-		*/
+		// exiftool
+		exiftoolCmd := exec.Command("exiftool", "-overwrite_original", "-TagsFromFile", file, generateFileName)
+		exiftoolErr := exiftoolCmd.Run()
+		if exiftoolErr != nil {
+			fmt.Println("exiftoolの実行に失敗しました:", exiftoolErr)
+			continue
+		}
+
+		// magick
+		magickCmd := exec.Command("magick", generateFileName, "-auto-orient", generateFileName)
+		magickErr := magickCmd.Run()
+		if magickErr != nil {
+			fmt.Println("magickの実行に失敗しました:", magickErr)
+			continue
+		}
 	}
 }
