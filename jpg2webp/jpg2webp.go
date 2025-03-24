@@ -79,8 +79,13 @@ func convertWebP(dir string) {
 		generateFileName := file[0:len(file)-len(ext)] + ".webp"
 		fmt.Println("<Source File Name:", file, ">")
 
-		// cwebp
-		cwebpCmd := exec.Command("cwebp", "-q", "75", "-metadata", "all", "-sharp_yuv", "-o", generateFileName, "-progress", "-short", file)
+		// cweb
+		var cwebpCmd *exec.Cmd
+		if strings.ToLower(ext) == ".jpg" {
+			cwebpCmd = exec.Command("cwebp", "-psnr", "42", "-qrange", "40", "95", "-metadata", "all", "-sharp_yuv", "-o", generateFileName, "-progress", "-short", file)
+		} else {
+			cwebpCmd = exec.Command("cwebp", "-q", "75", "-metadata", "all", "-sharp_yuv", "-o", generateFileName, "-progress", "-short", file)
+		}
 		cwebpErr := cwebpCmd.Run()
 		if cwebpErr != nil {
 			fmt.Println("cwebpの実行に失敗しました:", cwebpErr)
