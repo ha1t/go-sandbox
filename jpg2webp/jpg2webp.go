@@ -11,8 +11,9 @@ import (
 
 func main() {
 	if len(os.Args) > 1 {
-		file := os.Args[1]
-		convertWebP(file)
+		for _, file := range os.Args[1:] {
+			convertWebP(file)
+		}
 		return
 	}
 
